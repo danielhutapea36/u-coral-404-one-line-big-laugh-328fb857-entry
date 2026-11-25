@@ -36,6 +36,8 @@ def build_line() -> str:
     line = " ".join(_CLAUSES)
     if "\n" in line or "\r" in line:
         raise ValueError("line clauses must not contain line breaks")
+    if not line.strip():
+        raise ValueError("line must not be only white space")
     return line
 
 
