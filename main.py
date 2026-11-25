@@ -48,9 +48,18 @@ def resolve_output_dir() -> str:
 
 
 def write_entry(path: str, line: str) -> None:
-    """Write the line exactly as-is: no trailing newline, UTF-8."""
+    """Write the line exactly as-is: no trailing newline, UTF-8.
+
+    Reads the file back after writing and fails loudly if the bytes
+    on disk differ from the line — a partial write must never pass
+    as a finished entry.
+    """
     with open(path, "w", encoding="utf-8", newline="") as handle:
         handle.write(line)
+    with open(path, "rb") as handle:
+        written = handle.read()
+    if written != line.encode("utf-8"):
+        raise ValueError("entry.txt bytes differ from the built line")
 
 
 def main(argv=None) -> int:
